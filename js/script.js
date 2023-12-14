@@ -46,14 +46,14 @@ subMenuEl.style.height = "100%"
  
 // Task 4.2
 // Set the background color of subMenuEl to the value stored in the --sub-menu-bg CSS custom property.
-subMenuEl.backgroundColor = "VAR(--sub-menu-bg)"
+subMenuEl.style.backgroundColor = "var(--sub-menu-bg)"
 // Task 4.3
 // Add the class of flex-around to the subMenuElelement.
 subMenuEl.classList.add("flex-around");
 
 // Task 4.4
 // Set the CSS position property of subMenuEl to the value of absolute.
-subMenuEl.style.position("absolute");
+subMenuEl.style.position = "absolute"
 
 // Task 4.5
 // Set the CSS top property of subMenuEl to the value of 0.
@@ -68,82 +68,100 @@ const topMenuLinks = topMenuEL.querySelectorAll("a");
 // Declare a global showing SubMenu variable and initialize it to false;
 var showingSubMenu = false;
 
-// Task 5.2
+//Task 5.2
 // Attach a delegated 'click' event listener to topMenuEl.
 topMenuEL.addEventListener("click", function (evt) {
+  // The first line of code of the event listener function should call the event object's preventDefault()method.
   evt.preventDefault();
-})
-//======
 
-// The first line of code of the event listener function should call the event object's preventDefault()method.
+  // The second line of code function should immediately return if the element clicked was not an <a>element.
+  if (evt.target.localName !== "a") { 
+    return
+  }
 
-// The second line of code function should immediately return if the element clicked was not an <a>element.
+  // console.log the content of the <a>to verify the handler is working.
+  console.log(evt.target.innerText)
+  renderMain(evt.target.innerText)
+  // Progress Check
+  // Ensure that clicking ABOUT, CATALOG, etc. logs out about, catalog, etc. when a link is clicked.
 
-// console.log the content of the <a>to verify the handler is working.
-if (evt.target.localName !== "a") {
+  // Clicking anywhere other than on a link should do nothing.
+  
+  // Task 5.3
+  // Next in the event listener, if the clicked <a>link has a class of active:
+  // Remove the active class from the clicked <a> element.
+  // Set the showingSubMenuto false.
+  // Set the CSS top property of subMenuEl to 0.
+  
+  // return to exit the handler.
+  if (evt.target.classList.contains('active')) {
+    evt.target.classList.remove("active");
+    showingSubMenu = false
+    subMenuEl.style.top ="0"
+    console.log('removing active')
+    return
+   }
 
-return;
-}
-// Progress Check
-// Ensure that clicking ABOUT, CATALOG, etc. logs out about, catalog, etc. when a link is clicked.
-console.log(evt.target.textContent);
-// Clicking anywhere other than on a link should do nothing.
-
-// Task 5.3
-// Next in the event listener, if the clicked <a>link has a class of active:
-// Remove the active class from the clicked <a> element.
-// Set the showingSubMenuto false.
-// Set the CSS top property of subMenuEl to 0.
-
-// return to exit the handler.
-if (evt.target.classList.contains('active')) {
-evt.target.classList.remove("active"); }
-showingSubMenu = false
-subMenuEl.style.top ="0"
-console.log('removing active')
-
-return;
 
 // Task 5.4
 // Next, the event listener should remove a class name of activefrom each <a>element in topMenuLinks- whether the activeclass exists or not.
 
 // Hint: Removing a non-existent class from an element does not cause an error, so just remove it!
 
-topMenuLinks.forEach(link => link.classList.remove("active"));
+  topMenuLinks.forEach(link => link.classList.remove("active"));
 
-//Task 5.5
-// Next, the event listener should add a class name of activeto the <a>element that was clicked.
-evt.target.classList.add("active");
+  //Task 5.5
+  // Next, the event listener should add a class name of activeto the <a>element that was clicked.
+  evt.target.classList.add("active");
 
-// Task 5.6
-// Set showingSubMenu to true if the clicked <a>element's "link" object within menuLinks has a subLinks property (all do, except for the "link" object for ABOUT), otherwise, set it to false.
+  // Task 5.6
+  // Set showingSubMenu to true if the clicked <a>element's "link" object within menuLinks has a subLinks property (all do, except for the "link" object for ABOUT), otherwise, set it to false.
 
-const activeLink = menuLinks.find(
-  (link) => link.text === evt.target.textContent
-);
+  const activeLink = menuLinks.find(
+    (link) => link.text === evt.target.textContent
+  );
 
-showingSubMenu = activeLink.hasOwnProperty('subLinks');
+  showingSubMenu = activeLink.hasOwnProperty('subLinks');
 
-// if (activeLink.hasOwnProperty("subLinks")) {
-  //   showingSubMenu = true
-  // } else {
-  //   showingSubMenu = false
-  // }
+  // if (activeLink.hasOwnProperty("subLinks")) {
+    //   showingSubMenu = true
+    // } else {
+    //   showingSubMenu = false
+    // }
 
-// Hint: Saving the "link" object in a variable will come in handy for passing its subLinksarray in Task 5.7
+  // Hint: Saving the "link" object in a variable will come in handy for passing its subLinksarray in Task 5.7
 
-if (showingSubMenu) {
-  buildSubMenu(activeLink.subLinks);
-  subMenuEl.style.top = "100%";
-} else {
-  subMenuEl.style.top = 0;
+  if (showingSubMenu) {
+    buildSubMenu(activeLink.subLinks);
+    subMenuEl.style.top = "100%";
+  } else {
+    subMenuEl.style.top = 0;
+  }
+
+  if (evt.target.textContent == "about") {
+    mainEL.innerHTML = `<h1>${evt.target.textContent.toUpperCase()}</h1>`;
+  }
+
+})
+
+function buildSubMenu(links) {
+  subMenuEl.innerHTML = ""
+  subMenuEl.style.top = '100%'
+  links.forEach(link => {
+    const subMenuAnchor = document.createElement('a')
+    subMenuAnchor.href = link.href
+    subMenuAnchor.innerText = link.text
+    subMenuAnchor.addEventListener('click', (e)=>{
+      e.preventDefault()
+      renderMain(subMenuAnchor.innerText)
+    })
+    subMenuEl.append(subMenuAnchor)
+  })
 }
 
-if (evt.target.textContent == "about") {
-  mainEL.innerHTML = `<h1>${evt.target.textContent.toUpperCase()}</h1>`;
+function renderMain(str) {
+  mainEL.innerHTML = `<h1>${str}</h1>`
 }
-
-;
 
 // Progress Check
 // Clicking any of the links should make that link "active" and clear the others:
